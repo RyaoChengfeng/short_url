@@ -1,0 +1,23 @@
+app:
+  addr: ":3000"
+  prefix: "/api/v1"
+
+redis:
+  addr: "redis:6379"
+  password: ""
+  db: 0 #int
+
+mongodb:
+  addr: "mongo:27017"
+  username: ""
+  password: ""
+  db: "short_url"
+
+logConf:
+  log_path: "../log"
+  log_file_name: "log.log"
+
+web:
+  addr: "localhost:1323" # 此处为短链地址
+
+debug: true
