@@ -10,6 +10,7 @@ type Config struct {
 	App     app     `yaml:"app"`
 	Redis   redis   `yaml:"redis"`
 	MongoDB mongodb `yaml:"mongodb"`
+	PgDB pgdb `yaml:"pgdb"`
 	Web     web     `yaml:"web"`
 	LogConf logConf `yaml:"logConf"`
 	Debug   bool    `yaml:"debug"`
@@ -31,6 +32,14 @@ type mongodb struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	DB       string `yaml:"db"`
+}
+
+type pgdb struct {
+	User     string `yaml:"user"`
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	DB       string `yaml:"db"`
+	Password string `yaml:"password"`
 }
 
 type web struct {

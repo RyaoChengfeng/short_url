@@ -3,11 +3,9 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"src/config"
 	. "src/util"
-	"strconv"
 )
 
 type returnData struct {
@@ -15,7 +13,7 @@ type returnData struct {
 }
 
 func initDB() {
-	initMongoMongoDB()
+	initPgDB()
 }
 
 func main() {
@@ -25,37 +23,46 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	gAPI := e.Group(config.C.App.Prefix)
-	gAPI.POST("/short_url", GetShortUrl)
+	gAPI.POST("/api/short_url", GetShortUrl)
 	gAPI.GET("/:shorter",RedirectShortUrl)
 	Logger.Fatal(e.Start(config.C.App.Addr))
 }
 
-//GetShortUrl POST /short_url?url=
+//GetShortUrl POST /api/short_url?url=
 func GetShortUrl(c echo.Context) error {
 	longUrl := c.QueryParam("url")
     m := GetModel()
     defer m.Close()
 
-    id := primitive.NewObjectID()
-	intID, err := strconv.ParseInt(id.Hex(), 10, 64)
-	if err!=nil {
-		Logger.Error(err)
-		return c.JSON(http.StatusInternalServerError,"ParseInt error")
-	}
-    shortUrl := base10ToBase62(intID)
+	//intID, err := strconv.ParseInt(id.Hex(), 16, 64)
+	//if err!=nil {
+	//	Logger.Error(err)
+	//	return c.JSON(http.StatusInternalServerError,"ParseInt error")
+	//}
+
 	var url = Url{
-		ID:       id,
 		LongUrl:  longUrl,
-		ShortUrl: shortUrl,
+		//ShortUrl: shortUrl,
 	}
-	rst,err:=m.InsertUrl(url)
+
+	rst,id,err:=m.CreateUrl(url)
 	Logger.Debug(rst)
 	if err!=nil {
 		Logger.Error(err)
-		return c.JSON(http.StatusInternalServerError,"InsertUrl error")
+		return c.JSON(http.StatusInternalServerError,"CreateUrl error")
+	}
+	//id := int64(rst.RowsReturned())
+	Logger.Debug(id)
+	shortUrl := base10ToBase62(id)
+
+	rst,err=m.UpdateUrl(id,shortUrl)
+	Logger.Debug(rst)
+	if err!=nil {
+		Logger.Error(err)
+		return c.JSON(http.StatusInternalServerError,"UpdateUrl error")
 	}
 
-	shorter := config.C.Web.Addr + shortUrl
+	shorter := config.C.Web.Addr + "/" + shortUrl
 	var rsp = returnData{ShortUrl: shorter}
 	return c.JSON(http.StatusOK,rsp)
 }
@@ -63,13 +70,13 @@ func GetShortUrl(c echo.Context) error {
 // RedirectShortUrl GET /:shorter
 func RedirectShortUrl(c echo.Context) error {
 	shorter:=c.Param("shorter")
-	if len(shorter)!=6 {
+	if len(shorter)!=5 {
 		return c.JSON(http.StatusNotFound,"not found")
 	}
 
 	m := GetModel()
 	defer m.Close()
-	url,err:=m.RetrieveUrlWithShortUrl(shorter)
+	url,err:=m.RetrieveUrlByShorter(shorter)
 	Logger.Debug(url)
 	if err!=nil {
 		Logger.Error(err)

@@ -13,6 +13,13 @@ mongodb:
   password: ""
   db: "short_url"
 
+pgdb:
+  host: "postgres"
+  port: "5432"
+  db: "short_url"
+  user: "postgres"
+  password: ""
+
 logConf:
   log_path: "../log"
   log_file_name: "log.log"
