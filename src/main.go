@@ -23,7 +23,7 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.Logger())
 	gAPI := e.Group(config.C.App.Prefix)
-	gAPI.POST("/api/short_url", GetShortUrl)
+	gAPI.GET("/api/short_url", GetShortUrl)
 	gAPI.GET("/:shorter",RedirectShortUrl)
 	Logger.Fatal(e.Start(config.C.App.Addr))
 }

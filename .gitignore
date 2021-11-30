@@ -20,7 +20,10 @@ gen
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+deploy
 env/config/default.yml
+env/config/dev.yml
+env/config/prod.yml
 docker-compose.yml
 docker-compose-dev.yml
 # Dependency directories (remove the comment below to include it)

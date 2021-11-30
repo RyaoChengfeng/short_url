@@ -1,0 +1,24 @@
+app:
+  addr: ":3000"
+  prefix: ""
+
+redis:
+  addr: "redis:6379"
+  password: ""
+  db: 0
+
+pgdb:
+  host: "postgres"
+  port: "5432"
+  db: ""
+  user: ""
+  password: ""
+
+logConf:
+  log_path: "../log"
+  log_file_name: ""
+
+web:
+  addr: "" # 此处为短链地址
+
+debug: false
